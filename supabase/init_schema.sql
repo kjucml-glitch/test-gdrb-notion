@@ -131,6 +131,40 @@ on public.pages
 for delete
 using (auth.uid() = author_id);
 
+-- auth.users 생성 시 profiles 자동 생성 트리거 (SECURITY DEFINER로 RLS 우회)
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.profiles (id, email, display_name, avatar, bio)
+  values (
+    new.id,
+    coalesce(new.email, ''),
+    coalesce(
+      new.raw_user_meta_data->>'display_name',
+      new.raw_user_meta_data->>'full_name',
+      ''
+    ),
+    coalesce(
+      new.raw_user_meta_data->>'avatar_url',
+      new.raw_user_meta_data->>'picture',
+      ''
+    ),
+    ''
+  )
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
+
 -- Storage 버킷 생성(이미 있으면 무시)
 insert into storage.buckets (id, name, public)
 values ('pages', 'pages', true)

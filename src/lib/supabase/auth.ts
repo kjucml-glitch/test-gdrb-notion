@@ -53,7 +53,8 @@ async function ensureProfile(
 
   const { error } = await getSupabaseClient().from("profiles").upsert(profile, { onConflict: "id" });
   if (error) {
-    throw new Error(error.message);
+    // auth.users trigger가 profile을 자동 생성하므로 RLS 오류는 무시
+    console.warn("Profile upsert skipped (trigger will handle):", error.message);
   }
 }
 
