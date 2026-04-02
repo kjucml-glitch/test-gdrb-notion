@@ -122,18 +122,23 @@ export async function logoutUser(): Promise<void> {
 }
 
 export function onAuthChange(callback: (user: SupabaseAuthUser | null) => void) {
-  const supabase = getSupabaseClient();
-  const {
-    data: { subscription },
-  } = supabase.auth.onAuthStateChange((_: unknown, session: { user: SupabaseAuthUser | null } | null) => {
-    callback(session?.user ?? null);
-  });
+  try {
+    const supabase = getSupabaseClient();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_: unknown, session: { user: SupabaseAuthUser | null } | null) => {
+      callback(session?.user ?? null);
+    });
 
-  supabase.auth.getUser().then(({ data }: { data: { user: SupabaseAuthUser | null } }) => {
-    callback(data.user ?? null);
-  });
+    supabase.auth.getUser().then(({ data }: { data: { user: SupabaseAuthUser | null } }) => {
+      callback(data.user ?? null);
+    });
 
-  return () => subscription.unsubscribe();
+    return () => subscription.unsubscribe();
+  } catch {
+    callback(null);
+    return () => {};
+  }
 }
 
 export function supabaseUserToUser(authUser: SupabaseAuthUser): User {
