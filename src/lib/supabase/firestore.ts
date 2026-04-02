@@ -1,10 +1,14 @@
-import { supabase } from "./client";
+import { getSupabaseClient } from "./client";
 import type { Page, SidebarPage } from "@/types";
 import { slugify } from "@/lib/utils/helpers";
 
 const PAGES = "pages";
 
 type DbRow = Record<string, unknown>;
+
+function db() {
+  return getSupabaseClient();
+}
 
 function readField<T>(row: DbRow, snake: string, camel: string): T | undefined {
   const snakeValue = row[snake] as T | undefined;
@@ -63,14 +67,14 @@ export async function createPage(authorId: string, parentPageId?: string): Promi
     published_at: null,
   };
 
-  const { data, error } = await supabase.from(PAGES).insert(payload).select("*").single();
+  const { data, error } = await db().from(PAGES).insert(payload).select("*").single();
 
   if (error) throw new Error(error.message);
   return pageFromRow(data as DbRow);
 }
 
 export async function getPage(pageId: string): Promise<Page | null> {
-  const { data, error } = await supabase.from(PAGES).select("*").eq("id", pageId).single();
+  const { data, error } = await db().from(PAGES).select("*").eq("id", pageId).single();
 
   if (error) {
     if (error.code === "PGRST116") return null;
@@ -81,7 +85,7 @@ export async function getPage(pageId: string): Promise<Page | null> {
 }
 
 export async function getPageBySlug(slug: string): Promise<Page | null> {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from(PAGES)
     .select("*")
     .eq("slug", slug)
@@ -96,7 +100,7 @@ export async function getPageBySlug(slug: string): Promise<Page | null> {
 }
 
 export async function getPublishedPages(): Promise<Page[]> {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from(PAGES)
     .select("*")
     .eq("is_published", true)
@@ -108,7 +112,7 @@ export async function getPublishedPages(): Promise<Page[]> {
 }
 
 export async function getUserPages(authorId: string): Promise<Page[]> {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from(PAGES)
     .select("*")
     .eq("author_id", authorId)
@@ -159,17 +163,17 @@ export async function updatePage(
     updateData.published_at = new Date().toISOString();
   }
 
-  const { error } = await supabase.from(PAGES).update(updateData).eq("id", pageId);
+  const { error } = await db().from(PAGES).update(updateData).eq("id", pageId);
   if (error) throw new Error(error.message);
 }
 
 export async function deletePage(pageId: string): Promise<void> {
-  const { error } = await supabase.from(PAGES).delete().eq("id", pageId);
+  const { error } = await db().from(PAGES).delete().eq("id", pageId);
   if (error) throw new Error(error.message);
 }
 
 export async function archivePage(pageId: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await db()
     .from(PAGES)
     .update({
       is_archived: true,

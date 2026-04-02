@@ -1,4 +1,4 @@
-import { supabase } from "./client";
+import { getSupabaseClient } from "./client";
 
 const BUCKET = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || "pages";
 
@@ -9,7 +9,7 @@ function makePath(basePath: string, fileName: string): string {
 
 async function uploadImage(file: File, path: string): Promise<string> {
   const objectPath = makePath(path, file.name);
-  const { error } = await supabase.storage.from(BUCKET).upload(objectPath, file, {
+  const { error } = await getSupabaseClient().storage.from(BUCKET).upload(objectPath, file, {
     cacheControl: "3600",
     upsert: false,
   });
@@ -20,7 +20,7 @@ async function uploadImage(file: File, path: string): Promise<string> {
 
   const {
     data: { publicUrl },
-  } = supabase.storage.from(BUCKET).getPublicUrl(objectPath);
+  } = getSupabaseClient().storage.from(BUCKET).getPublicUrl(objectPath);
 
   return publicUrl;
 }
@@ -39,7 +39,7 @@ export async function deleteImage(url: string): Promise<void> {
   if (index < 0) return;
 
   const objectPath = decodeURIComponent(url.slice(index + marker.length));
-  const { error } = await supabase.storage.from(BUCKET).remove([objectPath]);
+  const { error } = await getSupabaseClient().storage.from(BUCKET).remove([objectPath]);
   if (error) {
     throw new Error(error.message);
   }

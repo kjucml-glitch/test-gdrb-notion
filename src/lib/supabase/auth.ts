@@ -1,4 +1,4 @@
-import { supabase } from "./client";
+import { getSupabaseClient } from "./client";
 import type { User } from "@/types";
 
 type SupabaseAuthUser = {
@@ -51,7 +51,7 @@ async function ensureProfile(
     updated_at: new Date().toISOString(),
   };
 
-  const { error } = await supabase.from("profiles").upsert(profile, { onConflict: "id" });
+  const { error } = await getSupabaseClient().from("profiles").upsert(profile, { onConflict: "id" });
   if (error) {
     throw new Error(error.message);
   }
@@ -62,7 +62,7 @@ export async function registerUser(
   password: string,
   displayName: string
 ): Promise<SupabaseAuthUser> {
-  const { data, error } = await supabase.auth.signUp({
+  const { data, error } = await getSupabaseClient().auth.signUp({
     email,
     password,
     options: {
@@ -88,7 +88,7 @@ export async function loginUser(
   email: string,
   password: string
 ): Promise<SupabaseAuthUser> {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await getSupabaseClient().auth.signInWithPassword({ email, password });
 
   if (error) {
     throw new Error(error.message);
@@ -104,7 +104,7 @@ export async function loginUser(
 
 export async function loginWithGoogle(): Promise<void> {
   const redirectTo = typeof window !== "undefined" ? `${window.location.origin}/admin` : undefined;
-  const { error } = await supabase.auth.signInWithOAuth({
+  const { error } = await getSupabaseClient().auth.signInWithOAuth({
     provider: "google",
     options: { redirectTo },
   });
@@ -115,13 +115,14 @@ export async function loginWithGoogle(): Promise<void> {
 }
 
 export async function logoutUser(): Promise<void> {
-  const { error } = await supabase.auth.signOut();
+  const { error } = await getSupabaseClient().auth.signOut();
   if (error) {
     throw new Error(error.message);
   }
 }
 
 export function onAuthChange(callback: (user: SupabaseAuthUser | null) => void) {
+  const supabase = getSupabaseClient();
   const {
     data: { subscription },
   } = supabase.auth.onAuthStateChange((_: unknown, session: { user: SupabaseAuthUser | null } | null) => {
