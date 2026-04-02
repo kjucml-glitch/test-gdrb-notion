@@ -7,10 +7,6 @@ node_modules/
 .next/
 out/
 
-# Firebase
-firebase-debug.log
-.firebase/
-
 # Environment
 .env
 .env.local

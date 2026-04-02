@@ -10,9 +10,9 @@ export default function AdminSettingsPage() {
           </p>
         </div>
         <div className="p-6 border rounded-lg bg-card">
-          <h2 className="text-lg font-semibold mb-2">Firebase 설정</h2>
+          <h2 className="text-lg font-semibold mb-2">Supabase 설정</h2>
           <p className="text-sm text-muted-foreground">
-            .env.local.example 파일을 참고하여 Firebase 설정을 완료하세요.
+            .env.local.example 파일을 참고하여 Supabase 설정을 완료하세요.
           </p>
         </div>
       </div>

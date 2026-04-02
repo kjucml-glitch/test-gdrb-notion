@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getPageBySlug } from "@/lib/firebase/firestore";
+import { getPageBySlug } from "@/lib/supabase/firestore";
 import { BlogPostContent } from "@/components/blog/BlogPostContent";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils/helpers";
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     page = await getPageBySlug(slug);
   } catch {
-    // Firebase may not be configured
+    // Supabase may not be configured
   }
 
   if (!page) {
@@ -53,7 +53,7 @@ export default async function BlogPost({ params }: Props) {
   try {
     page = await getPageBySlug(slug);
   } catch {
-    // Firebase may not be configured
+    // Supabase may not be configured
   }
 
   if (!page || !page.isPublished) {

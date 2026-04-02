@@ -7,8 +7,8 @@ import { useSidebarStore } from "@/stores/sidebarStore";
 import {
   getUserSidebarPages,
   createPage,
-} from "@/lib/firebase/firestore";
-import { logoutUser } from "@/lib/firebase/auth";
+} from "@/lib/supabase/firestore";
+import { logoutUser } from "@/lib/supabase/auth";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,7 +45,7 @@ import {
 import { useTheme } from "next-themes";
 import type { SidebarPage } from "@/types";
 import { cn } from "@/lib/utils";
-import { archivePage } from "@/lib/firebase/firestore";
+import { archivePage } from "@/lib/supabase/firestore";
 import { toast } from "sonner";
 
 export function Sidebar() {

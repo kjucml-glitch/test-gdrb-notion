@@ -5,7 +5,7 @@ import { BlockNoteView } from "@blocknote/shadcn";
 import { useCreateBlockNote } from "@blocknote/react";
 import { useTheme } from "next-themes";
 import "@blocknote/shadcn/style.css";
-import { uploadBlockImage } from "@/lib/firebase/storage";
+import { uploadBlockImage } from "@/lib/supabase/storage";
 
 interface BlockNoteEditorProps {
   initialContent: string;

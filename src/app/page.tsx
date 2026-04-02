@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getPublishedPages } from "@/lib/firebase/firestore";
+import { getPublishedPages } from "@/lib/supabase/firestore";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils/helpers";
 import { ArrowRight } from "lucide-react";
@@ -12,7 +12,7 @@ export default async function BlogHome() {
   try {
     pages = await getPublishedPages();
   } catch {
-    // Firebase may not be configured yet
+    // Supabase may not be configured yet
   }
 
   return (
@@ -71,7 +71,7 @@ export default async function BlogHome() {
         <div className="max-w-4xl mx-auto px-6 md:px-12 text-center">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Notion Blog. Built with Next.js &
-            Firebase.
+            Supabase.
           </p>
         </div>
       </footer>
